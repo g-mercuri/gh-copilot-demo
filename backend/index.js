@@ -55,16 +55,28 @@ app.post('/todos', (req, res) => {
 
 // PUT /todos/:id - Aggiorna un todo
 app.put('/todos/:id', (req, res) => {
-  const { completed } = req.body;
+  const { completed, text } = req.body;
   const { id } = req.params;
-
-  db.run('UPDATE todos SET completed = ? WHERE id = ?', [completed, id], (err) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ id, completed });
-  });
+  
+  if (text !== undefined) {
+    db.run('UPDATE todos SET text = ? WHERE id = ?', [text, id], (err) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({ id, text });
+    });
+  } else if (completed !== undefined) {
+    db.run('UPDATE todos SET completed = ? WHERE id = ?', [completed, id], (err) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({ id, completed });
+    });
+  } else {
+    res.status(400).json({ error: 'No valid fields to update' });
+  }
 });
 
 // DELETE /todos/:id - Elimina un todo
