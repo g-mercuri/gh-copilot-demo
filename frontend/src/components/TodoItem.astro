@@ -1,0 +1,73 @@
+---
+interface Props {
+    id: number;
+    text: string;
+    completed: boolean;
+}
+
+const { id, text, completed } = Astro.props;
+---
+
+<div class="todo-item d-flex align-items-center justify-content-between border-bottom py-2">
+    <div class="form-check">
+        <input 
+            class="form-check-input"
+            type="checkbox"
+            id={`todo-${id}`}
+            checked={completed}
+            data-id={id}
+        />
+        <label 
+            class={`form-check-label ${completed ? 'text-decoration-line-through' : ''}`}
+            for={`todo-${id}`}
+        >
+            {text}
+        </label>
+    </div>
+    <button class="btn btn-danger btn-sm delete-todo" data-id={id}>
+        <i class="bi bi-trash"></i> Delete
+    </button>
+</div>
+
+<script>
+    function updateTodo(id: number, completed: boolean) {
+        fetch(`http://localhost:3000/todos/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ completed }),
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+
+    function deleteTodo(id: number) {
+        fetch(`http://localhost:3000/todos/${id}`, {
+            method: 'DELETE',
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+
+    // Event listeners
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const target = e.target as HTMLInputElement;
+            const id = target.dataset.id;
+            if (id) {
+                updateTodo(parseInt(id), target.checked);
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-todo').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const target = e.currentTarget as HTMLButtonElement;
+            const id = target.dataset.id;
+            if (id) {
+                deleteTodo(parseInt(id));
+            }
+        });
+    });
+</script>
