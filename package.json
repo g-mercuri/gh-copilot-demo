@@ -1,0 +1,17 @@
+{
+  "name": "ghcopilotdemo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "dev": "npm run install-all && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
