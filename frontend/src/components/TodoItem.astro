@@ -106,15 +106,16 @@ const { id, text, completed } = Astro.props;
 
     document.querySelectorAll('.edit-input').forEach(input => {
         input.addEventListener('keyup', (e) => {
-            const target = e.target as HTMLInputElement;
-            if (e.key === 'Enter' && target.value.trim()) {
+            const event = e as KeyboardEvent;
+            const target = event.target as HTMLInputElement;
+            if (event.key === 'Enter' && target.value.trim()) {
                 const todoItem = target.closest('.todo-item');
                 const editButton = todoItem?.querySelector('.edit-todo') as HTMLButtonElement;
                 const id = editButton?.dataset.id;
                 if (id) {
                     updateTodoText(parseInt(id), target.value.trim());
                 }
-            } else if (e.key === 'Escape') {
+            } else if (event.key === 'Escape') {
                 const todoItem = target.closest('.todo-item');
                 if (todoItem) {
                     const textSpan = todoItem.querySelector('.todo-text') as HTMLSpanElement;
