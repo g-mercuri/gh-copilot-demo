@@ -20,7 +20,9 @@ const request = require('supertest');
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 
-// Set up test app and in-memory database
+// Set up a test app with an in-memory database.
+// Note: backend/index.js couples the app with a file-based DB,
+// so for test isolation, recreate the app with an in-memory DB.
 let app;
 let db;
 
@@ -30,12 +32,20 @@ beforeAll((done) => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
     completed BOOLEAN DEFAULT 0
-  )`, done);
+  )`, () => {
+    app = express();
+    app.use(express.json());
 
-  // Set up Express app with routes (same as backend/index.js)
-  app = express();
-  app.use(express.json());
-  // ... register routes with test db
+    // Register the same routes as backend/index.js, using the test db
+    app.get('/todos', (req, res) => {
+      db.all('SELECT * FROM todos', [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+      });
+    });
+    // ... repeat for POST, PUT, DELETE routes
+    done();
+  });
 });
 
 afterAll((done) => {

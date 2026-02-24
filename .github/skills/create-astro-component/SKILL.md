@@ -35,7 +35,9 @@ const { /* destructure props */ } = Astro.props;
 </script>
 
 <style>
-    /* Only component-specific styles not available in Bootstrap */
+    /* Only for styles Bootstrap doesn't cover, such as custom
+       animations, precise margins on project-specific elements,
+       or hover transitions (e.g., .todo-item:hover .btn-group). */
 </style>
 ```
 
