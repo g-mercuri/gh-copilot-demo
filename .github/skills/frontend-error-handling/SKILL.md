@@ -74,4 +74,4 @@ try {
 - Display the server error message when available, fall back to a generic message
 - Include a dismiss button with `btn-close` and `data-bs-dismiss="alert"`
 - Prepend alerts to `.container` so they appear at the top of the page
-- Auto-dismiss success alerts after a few seconds with `setTimeout`
+- For success alerts, auto-dismiss after a few seconds: `setTimeout(() => alertDiv.remove(), 3000)`

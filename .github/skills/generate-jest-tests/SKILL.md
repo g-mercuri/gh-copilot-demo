@@ -18,6 +18,7 @@ Use this skill when you need to:
 
 - Node.js installed
 - `backend/index.js` with Express routes
+- `sqlite3` package installed (already a dependency in `backend/package.json`)
 - Jest and supertest installed: `cd backend && npm install --save-dev jest supertest`
 
 ## Steps
