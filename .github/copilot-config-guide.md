@@ -1,145 +1,166 @@
-# Guide to GitHub Copilot Configuration Files
+# Guide to GitHub Copilot Customization
 
-This guide explains what the GitHub Copilot configuration files in the `.github/` folder are for and when they should be used.
-
----
-
-## Overview
-
-GitHub Copilot can be customized at the repository level through configuration files in the `.github/` folder. These files provide context, instructions, and conventions that Copilot will use to generate more accurate code that is consistent with the project.
-
-| File | Purpose | When to use it |
-|------|---------|----------------|
-| `copilot-instructions.md` | General coding instructions | Always active, read automatically |
-| `architecture.md` | Architecture documentation | When Copilot needs to understand the structure |
-| `agents.md` | Definition of specialized agents | For specific tasks with dedicated context |
-| `skills.md` | Reusable templates and actions | To automate repetitive patterns |
-| `prompt.md` | Ready-to-use prompt library | As a reference for effective prompts |
+This guide explains the different ways you can customize GitHub Copilot's behavior in a repository. Each customization feature serves a different purpose — understanding the differences will help you choose the right one.
 
 ---
 
-## `copilot-instructions.md`
+## Quick Reference
 
-### What it is for
-This is the main Copilot configuration file for the repository. It contains the **general instructions** that Copilot should follow when generating code, suggestions, or responses in this project.
-
-### When to use it
-- **Always**: it is automatically read by Copilot in every interaction.
-- When you want to define **code conventions** (style, language, patterns).
-- When you want to specify the **technologies and frameworks** used in the project.
-- When you want to set **security rules** or **best practices** to follow.
-
-### What to include
-- Language for comments (e.g., English).
-- Naming and code style conventions.
-- Project technologies and frameworks with versions.
-- File and folder structure.
-- Security rules (input validation, SQL injection, etc.).
-- Preferred testing frameworks.
-
-### Example use case
-> A new developer opens the project and asks Copilot to generate a new API endpoint. Thanks to `copilot-instructions.md`, Copilot knows it should use Express.js, parameterized queries, error handling with appropriate status codes, and comments in English.
+| Feature | What it is | Location | How it activates |
+|---------|-----------|----------|-----------------|
+| **Custom Instructions** | Always-on context applied to every interaction | `.github/copilot-instructions.md` | Automatic |
+| **Path-Specific Instructions** | Instructions scoped to specific file types or directories | `.github/instructions/*.instructions.md` | Automatic (when matching files are involved) |
+| **Custom Agents** | Specialist personas with their own instructions and tool access | `.github/agents/*.agent.md` | Manual — select from agent dropdown |
+| **Agent Skills** | Folders of instructions and resources Copilot loads when relevant | `.github/skills/<name>/SKILL.md` | Automatic — chosen by Copilot when relevant |
+| **Prompt Files** | Reusable, standalone prompt templates | `.github/prompts/*.prompt.md` | Manual — attach in Copilot Chat |
 
 ---
 
-## `architecture.md`
+## Custom Instructions
 
-### What it is for
-Describes the **project architecture**: folder structure, main components, data flow, technologies used, and how the different parts of the application communicate with each other.
+**What they are:**
+Custom instructions are natural language guidelines stored in Markdown files that Copilot reads automatically. They define your project's coding standards, conventions, and preferences so you don't have to repeat them in every prompt.
 
-### When to use it
-- When working on **features that involve multiple parts** of the system (frontend + backend).
-- When you need to understand **how components interact** with each other.
-- When a new team member needs to **get oriented** in the project.
-- When asking Copilot to make **architectural changes** (adding a new service, changing the database, etc.).
+**Types:**
+- **Repository-wide** (`.github/copilot-instructions.md`): Apply to every Copilot interaction in the repo. Use for general conventions like coding style, preferred frameworks, and security rules.
+- **Path-specific** (`.github/instructions/*.instructions.md`): Apply only when Copilot is working on files matching a glob pattern defined in YAML frontmatter. Use for language-specific or directory-specific rules.
 
-### What to include
-- Architecture diagram (even in ASCII format).
-- Description of main components.
-- API endpoints with request/response details.
-- Database schema.
-- End-to-end data flow.
-- Commands to run the project.
+**When to use:**
+Use custom instructions for standards and guidelines that should apply broadly — things like "use parameterized queries," "prefer `const` over `let`," or "write comments in English."
 
-### Example use case
-> You want to add an authentication system. Copilot reads `architecture.md`, understands that the frontend communicates with the backend via REST API on port 3000, and can suggest where to add the authentication middleware and how to modify the Astro components to handle login.
+**Key characteristic:** Custom instructions are **always on**. They're silently included in every request to Copilot within their scope.
 
 ---
 
-## `agents.md`
+## Custom Agents
 
-### What it is for
-Defines **custom Copilot agents**, which are specialized profiles with specific context and instructions for certain areas of the project. Each agent has a dedicated "role."
+**What they are:**
+Custom agents are specialized versions of the Copilot agent, defined as Markdown files with YAML frontmatter. Each agent has its own name, description, system prompt, and optionally restricted tool access. They act like **tailored teammates** that already know the context of a specific area of your project.
 
-### When to use it
-- When the project has **distinct functional areas** (backend, frontend, database, testing).
-- When you want Copilot to respond with **specialized knowledge** for a specific area.
-- When different developers work on different parts of the project and need **targeted assistance**.
+**File format:** `.github/agents/<agent-name>.agent.md`
 
-### What to include
-- Agent name (e.g., `@todo-backend`).
-- Specific context for the area (files, technologies, conventions).
-- Response guidelines.
-- Concrete usage examples.
+```yaml
+---
+name: my-agent
+description: What this agent specializes in
+tools: ["read", "edit", "search"]  # optional, defaults to all tools
+---
 
-### Example use case
-> You are working only on the backend and write `@todo-backend Add a search endpoint for todos`. The agent already knows it should use Express.js, parameterized queries, and the SQLite database, without needing to specify it every time.
+System prompt with detailed instructions for this agent's behavior...
+```
+
+**When to use:**
+Use custom agents when your project has distinct areas that need different expertise — for example, a backend agent that knows the API conventions and a frontend agent that knows the UI framework. You select which agent to use from a dropdown in your IDE or on GitHub.com.
+
+**Key characteristic:** Custom agents are **manually selected**. You choose them when you want specialized help for a specific area. They can also restrict which tools are available, making them useful for read-only auditing or documentation tasks.
+
+**How agents differ from instructions:**
+- Instructions are **automatic and universal** — they apply to everything.
+- Agents are **manual and specialized** — you choose one when you need focused expertise.
 
 ---
 
-## `skills.md`
+## Agent Skills
 
-### What it is for
-Defines **reusable skills**, which are standardized templates and actions that Copilot can perform to automate recurring tasks in the project.
+**What they are:**
+Agent skills are folders containing a `SKILL.md` file (and optionally scripts and other resources) that teach Copilot how to perform specific, repeatable tasks. Copilot automatically loads a skill when it determines the skill is relevant to what you're asking it to do.
 
-### When to use it
-- When you have **repetitive patterns** in the code (e.g., creating a new endpoint, a new component, a new test).
-- When you want to **standardize** how certain types of code are generated.
-- When you want new developers to produce code **consistent** with existing conventions.
-- When you want to **speed up** common tasks with ready-made templates.
+**File format:** `.github/skills/<skill-name>/SKILL.md`
 
-### What to include
-- Skill name and description.
-- Required parameters.
-- Generated code template.
-- At least one complete practical example.
+```yaml
+---
+name: skill-name
+description: When and how Copilot should use this skill
+---
 
-### Example use case
-> You need to add 5 new REST endpoints. Instead of describing the structure each time, you use the "Create REST Endpoint" skill that automatically generates the code with the correct structure (validation, error handling, parameterized queries).
+Step-by-step instructions, templates, and examples...
+```
+
+**When to use:**
+Use skills for detailed, multi-step procedures that Copilot should follow when performing a specific type of task — like creating a REST endpoint, writing a test suite, or running a database migration. Skills can also include scripts and resources alongside the `SKILL.md` file.
+
+**Key characteristic:** Skills are **automatically selected by Copilot** based on relevance. The `description` field tells Copilot when to load the skill. You don't need to manually reference a skill — Copilot chooses it.
+
+**How skills differ from instructions:**
+- Instructions are **broad and always active** (e.g., "use English comments").
+- Skills are **detailed and loaded on demand** (e.g., "here's how to create a REST endpoint step by step with templates").
+
+**How skills differ from agents:**
+- Agents are **personas** you select to get specialized help for an area.
+- Skills are **procedures** that Copilot loads automatically when it recognizes a relevant task.
 
 ---
 
-## `prompt.md`
+## Prompt Files
 
-### What it is for
-It is a **prompt library** organized by category. It contains tested and optimized prompts to get the best results from Copilot in the specific context of the project.
+**What they are:**
+Prompt files are reusable Markdown templates (`.prompt.md`) that you can attach to a Copilot Chat conversation. They work like saved prompts — you write the instructions once and reuse them with different inputs each time.
 
-### When to use it
-- As a **quick reference** when you don't know how to phrase a request to Copilot.
-- When you want to **share effective prompts** with the team.
-- During **pair programming sessions** or workshops with Copilot.
-- When you want to ensure you get **consistent, high-quality results**.
+**File format:** `.github/prompts/<name>.prompt.md`
 
-### What to include
-- Prompts organized by category (backend, frontend, tests, DevOps, etc.).
-- Specific prompts with references to project files.
-- Prompts for common and recurring tasks.
+Prompt files are plain Markdown. They can reference other files in the repo using relative Markdown links (e.g., `[index.js](../../backend/index.js)`) to provide additional context.
 
-### Example use case
-> A new developer needs to write tests for an endpoint. They open `prompt.md`, find the "Backend tests" prompt, and paste it into Copilot Chat, immediately getting a complete test suite that conforms to the project conventions.
+**When to use:**
+Use prompt files for focused, single-purpose tasks that you run repeatedly with different inputs — like generating unit tests for an endpoint, creating a component from a spec, or running a code review checklist.
+
+**Key characteristic:** Prompt files are **manually attached** in Copilot Chat. You select them from the attachment picker and optionally add your own message on top.
+
+**How prompt files differ from skills:**
+- Skills are **automatically chosen** by Copilot and focus on teaching Copilot *how* to do something.
+- Prompt files are **manually selected** by you and focus on *what* you want Copilot to do right now.
+
+**How prompt files differ from instructions:**
+- Instructions are **always active** and provide background context.
+- Prompt files are **one-time use** and provide a specific task to execute.
 
 ---
 
-## General Best Practices
+## Summary: When to Use What
 
-1. **Keep files up to date**: When you add new features or change the architecture, also update the Copilot configuration files.
+| I want to... | Use |
+|--------------|-----|
+| Set coding standards that always apply | **Custom Instructions** (`.github/copilot-instructions.md`) |
+| Set rules for specific file types (e.g., all `.ts` files) | **Path-Specific Instructions** (`.github/instructions/*.instructions.md`) |
+| Get specialized help for a specific area (backend, frontend, testing) | **Custom Agents** (`.github/agents/*.agent.md`) |
+| Teach Copilot a repeatable procedure it can auto-apply | **Agent Skills** (`.github/skills/<name>/SKILL.md`) |
+| Save a prompt I reuse with different inputs | **Prompt Files** (`.github/prompts/*.prompt.md`) |
 
-2. **Be specific**: The more context you provide, the better Copilot's suggestions will be. Include file names, ports, technologies, and specific versions.
+---
 
-3. **Use practical examples**: Templates and concrete examples help Copilot understand exactly the style and conventions you want to follow.
+## Structure in This Repository
 
-4. **Organize by area**: Separate instructions by area (backend, frontend, tests) to make navigation and maintenance easier.
+This repository contains examples of each customization type:
 
-5. **Document non-obvious conventions**: Conventions like "comments in English" or "variable names in English" cannot be inferred from code alone — document them explicitly.
+```
+.github/
+├── copilot-instructions.md          # Repository-wide coding conventions
+├── architecture.md                   # Project architecture documentation
+├── copilot-config-guide.md          # This guide
+├── agents/                           # Custom agents
+│   ├── todo-backend.agent.md         # Express.js backend specialist
+│   ├── todo-frontend.agent.md        # Astro frontend specialist
+│   ├── todo-testing.agent.md         # Jest testing specialist
+│   └── todo-database.agent.md        # SQLite database specialist
+├── prompts/                          # Reusable prompt files
+│   ├── add-rest-endpoint.prompt.md   # Add a new API endpoint
+│   ├── create-astro-component.prompt.md  # Create a new UI component
+│   ├── generate-backend-tests.prompt.md  # Generate a Jest test suite
+│   ├── add-todo-filtering.prompt.md  # Add todo filter buttons
+│   ├── add-dark-mode.prompt.md       # Add dark/light mode toggle
+│   └── refactor-routes.prompt.md     # Separate routes into modules
+└── skills/                           # Agent skills
+    ├── create-rest-endpoint/SKILL.md # How to create REST endpoints
+    ├── create-astro-component/SKILL.md   # How to create Astro components
+    ├── generate-jest-tests/SKILL.md  # How to write Jest tests
+    ├── add-database-migration/SKILL.md   # How to write DB migrations
+    └── frontend-error-handling/SKILL.md  # How to handle fetch errors
+```
 
-6. **Iterate and improve**: Try the prompts, evaluate the results, and refine the instructions over time to get increasingly accurate responses.
+## Further Reading
+
+- [Copilot Customization Cheat Sheet](https://docs.github.com/en/copilot/reference/customization-cheat-sheet)
+- [About Custom Agents](https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents)
+- [About Agent Skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+- [Creating Custom Agents](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-custom-agents)
+- [Creating Agent Skills](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills)
+- [About Customizing Copilot Responses](https://docs.github.com/en/copilot/concepts/prompting/response-customization)
