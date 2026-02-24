@@ -102,7 +102,7 @@ Prompt files are reusable Markdown templates (`.prompt.md`) that you can attach 
 ---
 description: "What this prompt does"
 agent: "agent"
-tools: ["editFiles", "runCommands", "codebase"]
+tools: ["read", "edit", "execute", "search"]
 ---
 
 Task instructions in Markdown...
@@ -161,19 +161,21 @@ This repository contains examples of each customization type:
 ├── agents/                           # Custom agents
 │   ├── todo-backend.agent.md         # Express.js backend specialist
 │   ├── todo-frontend.agent.md        # Astro frontend specialist
-│   ├── todo-testing.agent.md         # Jest testing specialist
+│   ├── todo-testing.agent.md         # Jest (backend) + Playwright (frontend) testing specialist
 │   └── todo-database.agent.md        # SQLite database specialist
 ├── prompts/                          # Reusable prompt files
 │   ├── add-rest-endpoint.prompt.md   # Add a new API endpoint
 │   ├── create-astro-component.prompt.md  # Create a new UI component
 │   ├── generate-backend-tests.prompt.md  # Generate a Jest test suite
+│   ├── generate-frontend-tests.prompt.md # Generate Playwright E2E tests
 │   ├── add-todo-filtering.prompt.md  # Add todo filter buttons
 │   ├── add-dark-mode.prompt.md       # Add dark/light mode toggle
 │   └── refactor-routes.prompt.md     # Separate routes into modules
 └── skills/                           # Agent skills
     ├── create-rest-endpoint/SKILL.md # How to create REST endpoints
     ├── create-astro-component/SKILL.md   # How to create Astro components
-    ├── generate-jest-tests/SKILL.md  # How to write Jest tests
+    ├── generate-jest-tests/SKILL.md  # How to write Jest tests (backend only)
+    ├── generate-playwright-tests/SKILL.md  # How to write Playwright E2E tests (frontend)
     ├── add-database-migration/SKILL.md   # How to write DB migrations
     └── frontend-error-handling/SKILL.md  # How to handle fetch errors
 ```

@@ -2,11 +2,10 @@
 name: todo-database
 description: "Database agent: creates and runs SQLite migration scripts for schema changes"
 tools:
-  - "editFiles"
-  - "runCommands"
-  - "codebase"
+  - "read"
+  - "edit"
+  - "execute"
   - "search"
-  - "terminalLastCommand"
 ---
 
 # Todo Database Agent

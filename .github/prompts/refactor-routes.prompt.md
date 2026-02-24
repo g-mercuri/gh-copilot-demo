@@ -1,7 +1,7 @@
 ---
 description: "Refactor the backend by extracting routes into a separate module"
 agent: "agent"
-tools: ["editFiles", "runCommands", "codebase"]
+tools: ["read", "edit", "execute", "search"]
 ---
 
 # Refactor Routes

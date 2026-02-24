@@ -33,6 +33,11 @@ Specific conventions, standards, and best practices are defined in dedicated ins
 - **Accessibility**: `accessibility.instructions.md` — WCAG 2.2 AA, keyboard, forms, dynamic content
 - **CI/CD**: `github-actions.instructions.md` — workflow structure, caching, security
 
+## Testing Strategy
+
+- **Backend**: Jest + supertest for API unit/integration tests (`backend/__tests__/`)
+- **Frontend**: Playwright for E2E tests (`frontend/e2e/`) — **always use Playwright for frontend testing, never Jest or Vitest**
+
 ## Security Policy
 
 See [SECURITY.md](/SECURITY.md) for the vulnerability reporting process and contributor security guidelines.

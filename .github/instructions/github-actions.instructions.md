@@ -39,9 +39,12 @@ Cache `node_modules` for both backend and frontend to speed up builds:
 ## Testing
 
 - Run `npm test` in the `backend/` directory for Jest tests
+- Run Playwright E2E tests in the `frontend/` directory with `npx playwright test`
+- Install Playwright browsers in CI with `npx playwright install --with-deps`
 - Run linting and type checking for the frontend
 - Publish test results as artifacts for PR visibility
 - Enforce minimum test coverage thresholds
+- Upload Playwright HTML report as an artifact on failure
 
 ## Build and Deploy
 
@@ -88,6 +91,16 @@ jobs:
         run: cd backend && npm test
       - name: Install frontend dependencies
         run: cd frontend && npm ci
+      - name: Install Playwright browsers
+        run: cd frontend && npx playwright install --with-deps
       - name: Build frontend
         run: cd frontend && npm run build
+      - name: Run Playwright E2E tests
+        run: cd frontend && npx playwright test
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
 ```

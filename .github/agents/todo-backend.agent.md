@@ -2,13 +2,10 @@
 name: todo-backend
 description: "Express.js backend agent: adds endpoints, fixes bugs, and runs tests for the Todo API"
 tools:
-  - "editFiles"
-  - "runCommands"
-  - "codebase"
+  - "read"
+  - "edit"
+  - "execute"
   - "search"
-  - "runTests"
-  - "problems"
-  - "terminalLastCommand"
 ---
 
 # Todo Backend Agent

@@ -1,7 +1,7 @@
 ---
 description: "Create a new Astro component with Bootstrap styling and TypeScript"
 agent: "agent"
-tools: ["editFiles", "codebase"]
+tools: ["read", "edit", "search"]
 ---
 
 # Create Astro Component

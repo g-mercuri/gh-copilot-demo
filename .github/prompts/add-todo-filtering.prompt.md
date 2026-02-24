@@ -1,7 +1,7 @@
 ---
 description: "Add client-side todo filtering (All, Active, Completed) to the main page"
 agent: "agent"
-tools: ["editFiles", "codebase"]
+tools: ["read", "edit", "search"]
 ---
 
 # Add Todo Filtering

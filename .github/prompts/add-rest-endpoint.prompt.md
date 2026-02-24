@@ -1,7 +1,7 @@
 ---
 description: "Add a new REST API endpoint to the Express.js backend"
 agent: "agent"
-tools: ["editFiles", "runCommands", "codebase"]
+tools: ["read", "edit", "execute", "search"]
 ---
 
 # Add REST Endpoint

@@ -1,7 +1,7 @@
 ---
 description: "Generate a complete Jest + supertest test suite for the backend API"
 agent: "agent"
-tools: ["editFiles", "runCommands", "runTests", "codebase"]
+tools: ["read", "edit", "execute", "search"]
 ---
 
 # Generate Backend Tests

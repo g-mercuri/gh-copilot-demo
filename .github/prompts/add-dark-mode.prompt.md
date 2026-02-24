@@ -1,7 +1,7 @@
 ---
 description: "Add a dark/light mode toggle to the application navbar"
 agent: "agent"
-tools: ["editFiles", "codebase"]
+tools: ["read", "edit", "search"]
 ---
 
 # Add Dark Mode

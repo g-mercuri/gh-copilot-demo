@@ -2,12 +2,12 @@
 name: todo-frontend
 description: "Astro frontend agent: creates components, handles UI logic, and manages Bootstrap styling"
 tools:
-  - "editFiles"
-  - "runCommands"
-  - "codebase"
+  - "read"
+  - "edit"
+  - "execute"
   - "search"
-  - "problems"
-  - "terminalLastCommand"
+  - "web"
+  - "playwright/*"
 ---
 
 # Todo Frontend Agent
@@ -47,6 +47,7 @@ const { propName } = Astro.props;
 3. **Style** using Bootstrap 5 classes. Only add `<style>` for things Bootstrap cannot do.
 4. **Build** with `cd frontend && npm run build` to verify the changes compile.
 5. **Preview** with `cd frontend && npm run dev` to check in the browser.
+6. **Test** with Playwright — write or update E2E tests in `frontend/e2e/` and run with `cd frontend && npx playwright test`.
 
 ## Rules
 
@@ -56,3 +57,6 @@ const { propName } = Astro.props;
 - After mutations (create, update, delete), call `window.location.reload()`.
 - Keep comments in English.
 - Do not modify backend files — only touch `frontend/`.
+- **Always use Playwright** for frontend testing — never use Jest or other frameworks for UI tests.
+- Place Playwright test files in `frontend/e2e/` with the naming convention `*.spec.ts`.
+- Run Playwright tests with `cd frontend && npx playwright test`.

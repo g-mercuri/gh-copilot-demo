@@ -21,7 +21,7 @@ Respond in **English** when performing code reviews.
 ### 🟡 IMPORTANT (Requires discussion)
 
 - **Code Quality**: Duplicated code, missing error handling in SQLite callbacks, inconsistent patterns
-- **Test Coverage**: Missing Jest tests for new API endpoints or edge cases
+- **Test Coverage**: Missing Jest tests for new API endpoints or missing Playwright E2E tests for frontend changes
 - **Performance**: Missing database indexing, N+1 query patterns
 
 ### 🟢 SUGGESTION (Non-blocking improvements)
@@ -50,13 +50,22 @@ Respond in **English** when performing code reviews.
 - [ ] Form inputs have proper labels and validation
 - [ ] Component props are typed with TypeScript interfaces
 
-### Testing (Jest)
+### Testing — Backend (Jest)
 
 - [ ] New API endpoints have corresponding test cases
 - [ ] Tests cover success paths, validation errors, and error scenarios
 - [ ] Tests are independent and don't depend on execution order
 - [ ] Test names clearly describe what is being tested
 - [ ] Assertions are specific (not just truthy/falsy checks)
+
+### Testing — Frontend (Playwright)
+
+- [ ] New UI features have corresponding Playwright E2E tests in `frontend/e2e/`
+- [ ] Tests use Playwright locators (`getByRole`, `getByText`, `getByLabel`) over raw CSS selectors
+- [ ] Tests cover the full user flow (create, edit, complete, delete)
+- [ ] Tests verify visible UI state with meaningful assertions (`toBeVisible`, `toHaveText`, `toHaveCount`)
+- [ ] Tests are independent and do not rely on state from other tests
+- [ ] No use of Jest, Vitest, or other frameworks for frontend/UI testing — Playwright only
 
 ## Comment Format
 

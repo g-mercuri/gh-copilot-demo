@@ -95,3 +95,31 @@ async function createTodo(text: string): Promise<void> {
 - Default to zero client-side JavaScript — add interactivity only where needed
 - Use `<script>` tags only for interactive features (form submissions, checkbox toggles, delete buttons)
 - Do not import heavy JavaScript frameworks — rely on vanilla TypeScript for DOM manipulation
+
+## Testing with Playwright
+
+- **Always use Playwright** for frontend testing — never use Jest, Vitest, or other frameworks for UI/E2E tests
+- Place test files in `frontend/e2e/` with the naming convention `*.spec.ts`
+- Configure Playwright in `frontend/playwright.config.ts` with a `webServer` that starts both backend and frontend
+- Use semantic locators: `page.getByRole()`, `page.getByText()`, `page.getByLabel()` — avoid raw CSS selectors
+- Assert visible state: `expect(locator).toBeVisible()`, `.toHaveText()`, `.toHaveCount()`
+- Run tests with `cd frontend && npx playwright test`
+- Debug failures with `cd frontend && npx playwright test --ui`
+
+### Playwright Test Pattern
+
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('Todo creation', () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto('/');
+    });
+
+    test('should create a new todo', async ({ page }) => {
+        await page.getByLabel('Add a new todo').fill('Buy groceries');
+        await page.getByRole('button', { name: 'Add' }).click();
+        await expect(page.getByText('Buy groceries')).toBeVisible();
+    });
+});
+```
