@@ -3,57 +3,72 @@ name: add-database-migration
 description: Guide for creating SQLite database migration scripts. Use this when asked to modify the database schema or add new columns.
 ---
 
-When creating a database migration for the SQLite database, follow this pattern:
+# Add Database Migration
+
+This skill teaches you how to create and run idempotent SQLite migration scripts for this Todo List application.
+
+## When to Use This Skill
+
+Use this skill when you need to:
+- Add new columns to the `todos` table
+- Create new tables
+- Modify the database schema in any way
+- Prepare a migration that is safe to run multiple times
+
+## Prerequisites
+
+- Node.js installed
+- SQLite database `todos.db` in the `backend/` directory
+- The `sqlite3` package is already a dependency
 
 ## Steps
 
-1. Create a migration script in `backend/migrations/` with a numbered prefix (e.g., `001_add_priority.js`)
-2. Use `db.serialize()` to ensure operations run sequentially
-3. Make the migration idempotent — handle the case where it has already been applied
-4. Close the database connection when done
+1. **Create** `backend/migrations/` directory if it doesn't exist: `mkdir -p backend/migrations`
+2. **Determine** the next migration number by checking existing files in `backend/migrations/`.
+3. **Write** the migration script following the pattern below.
+4. **Run** it: `cd backend && node migrations/NNN_description.js`
+5. **Verify** by checking the console output for success messages.
+6. **Update** the API endpoints in `backend/index.js` to accept and return the new fields.
 
-## Template
+## Migration Script Template
 
 ```javascript
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('todos.db');
+const path = require('path');
+const db = new sqlite3.Database(path.join(__dirname, '..', 'todos.db'));
 
 db.serialize(() => {
   db.run(`ALTER TABLE todos ADD COLUMN column_name TYPE DEFAULT value`, (err) => {
     if (err) {
       if (err.message.includes('duplicate column name')) {
-        console.log('Column already exists, migration skipped.');
+        console.log('Column already exists — skipping.');
       } else {
         console.error('Migration error:', err.message);
+        process.exit(1);
       }
     } else {
-      console.log('Migration complete: column added.');
+      console.log('Migration applied: column_name added.');
     }
   });
 });
 
 db.close((err) => {
-  if (err) {
-    console.error('Error closing database:', err.message);
-  } else {
-    console.log('Migration finished successfully.');
-  }
+  if (err) console.error('Error closing database:', err.message);
+  else console.log('Migration complete.');
 });
 ```
 
-## Conventions
+## Naming Convention
 
-- Migration files are numbered sequentially: `001_`, `002_`, etc.
-- Each migration is idempotent (safe to run multiple times)
-- Always handle `duplicate column name` errors gracefully
-- Log the result of each operation
-- After adding columns, update the corresponding API endpoints to accept the new fields
+- Files: `NNN_short_description.js` (e.g., `001_add_priority.js`, `002_add_due_date.js`)
+- Columns: `snake_case`
 
 ## Example: Add Priority and Due Date
 
 ```javascript
 const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('todos.db');
+const path = require('path');
+const db = new sqlite3.Database(path.join(__dirname, '..', 'todos.db'));
 
 db.serialize(() => {
   db.run(`ALTER TABLE todos ADD COLUMN priority TEXT DEFAULT 'medium'`, (err) => {
@@ -75,3 +90,10 @@ db.serialize(() => {
 
 db.close(() => console.log('Migration finished.'));
 ```
+
+## After Running the Migration
+
+Update `backend/index.js`:
+- `POST /todos` — accept the new field in `req.body` and include it in the INSERT query
+- `PUT /todos/:id` — handle updating the new field
+- `GET /todos` — the new columns are returned automatically by `SELECT *`

@@ -3,42 +3,57 @@ name: create-astro-component
 description: Guide for creating new Astro components with typed Props, Bootstrap styling, and TypeScript. Use this when asked to create a new UI component.
 ---
 
-When creating a new Astro component in `frontend/src/components/`, follow this pattern:
+# Create Astro Component
+
+This skill teaches you how to create a new Astro component for the Todo List frontend application.
+
+## When to Use This Skill
+
+Use this skill when you need to:
+- Create a new reusable UI component in `frontend/src/components/`
+- Add a new page in `frontend/src/pages/`
+- Build a new section of the interface with Bootstrap 5 and TypeScript
+
+## Prerequisites
+
+- Astro project in `frontend/`
+- Bootstrap 5 loaded via CDN in `Layout.astro`
+- Bootstrap Icons loaded via CDN in `Layout.astro`
 
 ## Steps
 
-1. Define a TypeScript `Props` interface in the frontmatter block
-2. Destructure props from `Astro.props`
-3. Write HTML markup using Bootstrap 5 classes
-4. Add a `<script>` block for client-side interactivity (TypeScript)
-5. Add a `<style>` block only for component-specific styles not covered by Bootstrap
+1. **Create** a new `.astro` file in `frontend/src/components/` (or `frontend/src/pages/` for pages).
+2. **Define** a TypeScript `Props` interface in the frontmatter block.
+3. **Write** HTML markup using Bootstrap 5 classes.
+4. **Add** a `<script>` block for client-side interactivity using TypeScript.
+5. **Build** with `cd frontend && npm run build` to verify the component compiles.
+6. **Import** the component in a page or layout where it should appear.
 
-## Template
+## Component Template
 
 ```astro
 ---
 interface Props {
-    // Define typed props here
+    propName: string;
+    optionalProp?: number;
 }
 
-const { /* destructure props */ } = Astro.props;
+const { propName, optionalProp = 0 } = Astro.props;
 ---
 
-<div class="...Bootstrap classes...">
-    <!-- Component markup using Bootstrap 5 -->
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{propName}</h5>
+    </div>
 </div>
 
 <script>
-    // Client-side TypeScript logic
-    // Use document.querySelectorAll for event delegation
-    // Call API at http://localhost:3000 for data operations
+    // Client-side TypeScript — type-cast DOM elements
+    const element = document.getElementById('my-id') as HTMLElement;
+    element?.addEventListener('click', () => {
+        // Handle interaction
+    });
 </script>
-
-<style>
-    /* Only for styles Bootstrap doesn't cover, such as custom
-       animations, precise margins on project-specific elements,
-       or hover transitions (e.g., .todo-item:hover .btn-group). */
-</style>
 ```
 
 ## Conventions
@@ -48,8 +63,9 @@ const { /* destructure props */ } = Astro.props;
 - Use Bootstrap Icons with `<i class="bi bi-icon-name"></i>`
 - Type-cast DOM elements in scripts (e.g., `as HTMLInputElement`)
 - Reload page after API mutations: `window.location.reload()`
+- Only add `<style>` for things Bootstrap cannot cover (custom animations, hover transitions)
 
-## Example: Stats Component
+## Example: TodoStats Component
 
 ```astro
 ---

@@ -3,26 +3,40 @@ name: generate-jest-tests
 description: Guide for generating Jest test suites for Express.js API endpoints using supertest. Use this when asked to write tests for the backend.
 ---
 
-When creating tests for the backend API, follow this pattern:
+# Generate Jest Tests
+
+This skill teaches you how to create a complete Jest test suite for the backend API of this Todo List application.
+
+## When to Use This Skill
+
+Use this skill when you need to:
+- Write tests for existing or new API endpoints
+- Set up test infrastructure (Jest + supertest) for the backend
+- Verify that the API handles both success and error cases correctly
+
+## Prerequisites
+
+- Node.js installed
+- `backend/index.js` with Express routes
+- Jest and supertest installed: `cd backend && npm install --save-dev jest supertest`
 
 ## Steps
 
-1. Set up the test file in a `__tests__` or `tests` directory
-2. Import `supertest` and the Express app
-3. Create an in-memory SQLite database for test isolation
-4. Write `beforeAll` / `afterAll` hooks for setup and teardown
-5. Test each endpoint with both success and error cases
+1. **Check** dependencies — ensure `jest` and `supertest` are in `backend/package.json` devDependencies. If missing, install them.
+2. **Create** `backend/__tests__/` directory if it doesn't exist.
+3. **Write** a test file (e.g., `backend/__tests__/todos.test.js`).
+4. **Set up** an in-memory SQLite database in `beforeAll` to isolate tests from real data.
+5. **Register** the same Express routes using the test database.
+6. **Write** tests: one `describe` block per endpoint, covering success and error cases.
+7. **Run** with `cd backend && npx jest --verbose`.
 
-## Template
+## Test File Template
 
 ```javascript
 const request = require('supertest');
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 
-// Set up a test app with an in-memory database.
-// Note: backend/index.js couples the app with a file-based DB,
-// so for test isolation, recreate the app with an in-memory DB.
 let app;
 let db;
 
@@ -36,14 +50,25 @@ beforeAll((done) => {
     app = express();
     app.use(express.json());
 
-    // Register the same routes as backend/index.js, using the test db
+    // Register routes using the test db — mirror backend/index.js
     app.get('/todos', (req, res) => {
       db.all('SELECT * FROM todos', [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
       });
     });
-    // ... repeat for POST, PUT, DELETE routes
+
+    app.post('/todos', (req, res) => {
+      const { text } = req.body;
+      if (!text) return res.status(400).json({ error: 'Text is required' });
+      db.run('INSERT INTO todos (text) VALUES (?)', [text], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ id: this.lastID, text, completed: false });
+      });
+    });
+
+    // ... register PUT and DELETE routes the same way
+
     done();
   });
 });
@@ -52,41 +77,17 @@ afterAll((done) => {
   db.close(done);
 });
 
-describe('METHOD /endpoint', () => {
-  it('should return 200 with valid data', async () => {
-    const res = await request(app)
-      .method('/endpoint')
-      .send({ /* valid body */ });
+describe('GET /todos', () => {
+  it('should return an empty array initially', async () => {
+    const res = await request(app).get('/todos');
     expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('expectedField');
-  });
-
-  it('should return 400 with invalid data', async () => {
-    const res = await request(app)
-      .method('/endpoint')
-      .send({});
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('error');
+    expect(res.body).toEqual([]);
   });
 });
-```
 
-## Conventions
-
-- One `describe` block per endpoint
-- Test names should clearly describe the expected behavior
-- Always verify: status code, response body structure, specific field values
-- Clean up test data between tests if needed with `beforeEach`
-- Use `:memory:` SQLite database for speed and isolation
-
-## Example: POST /todos Tests
-
-```javascript
 describe('POST /todos', () => {
   it('should create a new todo with valid text', async () => {
-    const res = await request(app)
-      .post('/todos')
-      .send({ text: 'Buy groceries' });
+    const res = await request(app).post('/todos').send({ text: 'Buy groceries' });
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('id');
     expect(res.body.text).toBe('Buy groceries');
@@ -94,11 +95,17 @@ describe('POST /todos', () => {
   });
 
   it('should return 400 when text is missing', async () => {
-    const res = await request(app)
-      .post('/todos')
-      .send({});
+    const res = await request(app).post('/todos').send({});
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('Text is required');
   });
 });
 ```
+
+## Guidelines
+
+- One `describe` block per endpoint
+- Test names should clearly describe the expected behavior
+- Always verify: status code, response body structure, specific field values
+- Use `:memory:` SQLite database for speed and isolation
+- Clean up test data between tests if needed with `beforeEach`

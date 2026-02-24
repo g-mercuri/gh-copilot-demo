@@ -94,11 +94,25 @@ Use skills for detailed, multi-step procedures that Copilot should follow when p
 ## Prompt Files
 
 **What they are:**
-Prompt files are reusable Markdown templates (`.prompt.md`) that you can attach to a Copilot Chat conversation. They work like saved prompts — you write the instructions once and reuse them with different inputs each time.
+Prompt files are reusable Markdown templates (`.prompt.md`) that you can attach to a Copilot Chat conversation. They work like saved prompts — you write the instructions once and reuse them with different inputs each time. They support YAML frontmatter for specifying agent mode, tools, and description, plus `{{variable}}` placeholders for user input.
 
 **File format:** `.github/prompts/<name>.prompt.md`
 
-Prompt files are plain Markdown. They can reference other files in the repo using relative Markdown links (e.g., `[index.js](../../backend/index.js)`) to provide additional context.
+```yaml
+---
+description: "What this prompt does"
+agent: "agent"
+tools: ["editFiles", "runCommands", "codebase"]
+---
+
+Task instructions in Markdown...
+
+## User Input
+
+{{variableName}}
+```
+
+Prompt files can reference other files in the repo using relative Markdown links (e.g., `[index.js](../../backend/index.js)`) to provide additional context.
 
 **When to use:**
 Use prompt files for focused, single-purpose tasks that you run repeatedly with different inputs — like generating unit tests for an endpoint, creating a component from a spec, or running a code review checklist.
