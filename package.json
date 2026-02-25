@@ -6,7 +6,7 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail \"node backend/index.js\" \"npm run dev -w frontend\""
+    "dev": "concurrently --kill-others-on-fail \"node backend/index.js\" \"node_modules/.bin/astro dev --root ./frontend\""
   },
   "keywords": [],
   "author": "",
