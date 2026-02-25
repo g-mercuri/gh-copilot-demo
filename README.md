@@ -36,9 +36,15 @@
 git clone https://github.com/g-mercuri/gh-copilot-demo.git
 cd gh-copilot-demo
 
-# Install dependencies and start both servers
+# Install dependencies
+npm install
+
+# Start both servers
 npm run dev
+
 ```
+
+
 
 This starts:
 
