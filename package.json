@@ -1,17 +1,18 @@
 {
   "name": "gh-copilot-demo",
   "version": "1.0.0",
-  "main": "index.js",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "install-all": "npm install --ignore-scripts && cd backend && npm install && cd ../frontend && npm install",
-    "start": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
-    "dev": "npm run install-all && npm run start"
+    "dev": "concurrently --kill-others-on-fail --kill-others --names backend,frontend --prefix-colors blue,green \"node backend/index.js\" \"node ./frontend/node_modules/astro/astro.js dev --root ./frontend\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^9.2.1"
   }
 }
